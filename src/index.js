@@ -5,6 +5,8 @@ import moment from 'moment';
 const App = () => {
   const [info, setInfo] = useState([{}]);
 
+  console.disableYellowBox = true;
+
   const handleInfo = async () => {
     fetch('http://api-dso2.herokuapp.com/log', {
       method: 'GET',
@@ -18,7 +20,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => handleInfo(), 1000);
+    setTimeout(() => handleInfo(), 3000);
   });
 
   const renderItemList = ({item}) => {
@@ -29,7 +31,7 @@ const App = () => {
         </Text>
         <Text>
           <Text style={styles.description}>ACESS DATE: </Text>
-          {moment(item.access_date).format('hh:mm:ss - DD/MM/YYYY')}
+          {moment(item.access_date).format('HH:mm:ss - DD/MM/YYYY')}
         </Text>
         <Text style={styles.status}>
           <Text style={styles.description}>DOOR STATUS: </Text>
