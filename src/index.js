@@ -1,22 +1,52 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
-import axios from 'axios';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
+import moment from 'moment';
 
 const App = () => {
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState([{}]);
 
-  const handleinfo = () => {
-    axios
-      .get('https://jsonplaceholder.typicode.com/todos/')
-      .then(function(response) {
-        setInfo(response.data);
+  const handleInfo = async () => {
+    fetch('http://api-dso2.herokuapp.com/log', {
+      method: 'GET',
+    })
+      .then(res => {
+        res.json().then(r => setInfo(r));
+      })
+      .catch(error => {
+        console.log(error.message);
       });
+  };
+
+  useEffect(() => {
+    setTimeout(() => handleInfo(), 1000);
+  });
+
+  const renderItemList = ({item}) => {
+    return (
+      <View style={styles.list}>
+        <Text>
+          <Text style={styles.description}>UID:</Text> {item.card_uid}
+        </Text>
+        <Text>
+          <Text style={styles.description}>ACESS DATE: </Text>
+          {moment(item.access_date).format('hh:mm:ss - DD/MM/YYYY')}
+        </Text>
+        <Text style={styles.status}>
+          <Text style={styles.description}>DOOR STATUS: </Text>
+          {item.door_status}
+        </Text>
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Button onPress={handleinfo} title="GET" />
-      {info.length > 0 ? info.map(i => <Text>{i.id}</Text>) : null}
+      <Text style={styles.title}>DOOR ACESS LOG: </Text>
+      {info.length > 0 ? (
+        <FlatList style={styles.flat} data={info} renderItem={renderItemList} />
+      ) : (
+        <Text>Sem log</Text>
+      )}
     </View>
   );
 };
@@ -25,8 +55,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#7d7d7d7d',
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  list: {
+    backgroundColor: '#eaeaea',
+    marginBottom: 10,
+    padding: 10,
+  },
+  title: {
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  description: {
+    fontWeight: 'bold',
+  },
+  status: {
+    textTransform: 'uppercase',
   },
 });
 
